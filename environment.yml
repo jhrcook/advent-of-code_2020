@@ -1,0 +1,17 @@
+name: aoc2020
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pandas
+  - numpy
+  - seaborn
+  - scipy
+  - matplotlib
+  - jupyterlab
+  - black
+  - nodejs
+  - jupyterlab_code_formatter
+  - plotnine
+  - pylint
+prefix: /usr/local/Caskroom/miniconda/base/envs/aoc2020
