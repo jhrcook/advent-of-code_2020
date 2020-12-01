@@ -1,3 +1,4 @@
+from itertools import product
 from pathlib import Path
 
 import numpy as np
@@ -9,13 +10,18 @@ with open(input_file, "r") as input_data:
     for line in input_data:
         data.append(int(line))
 
-# Loop over all possible combinations to find solution.
-sum_to_2020 = []
-for i in range(0, len(data)):
-    for j in range(i, len(data)):
-        if data[i] + data[j] == 2020:
-            sum_to_2020 = [data[i], data[j]]
-            print(f"values found: {sum_to_2020[0]} + {sum_to_2020[1]} = 2020")
 
-answer = sum_to_2020[0] * sum_to_2020[1]
-print(f"Solution: {answer}")
+def challenge1(data, num_values=2, target_value=2020):
+    """General solver for challenge 1."""
+    data_array = [data for _ in range(num_values)]
+    for values in product(*data_array):
+        if np.sum(values) == target_value:
+            print("Solution found.")
+            return np.product(values)
+
+
+# Solve challenge 1.
+sol1 = challenge1(data, 2, 2020)
+print(f"solution 1: {sol1}")
+sol2 = challenge1(data, 3, 2020)
+print(f"solution 2: {sol2}")
