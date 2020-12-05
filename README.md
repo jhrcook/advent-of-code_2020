@@ -11,7 +11,7 @@
 2. [Day 2](challenges/02_challenge.py) ⭐️⭐️
 3. [Day 3](challenges/03_challenge.py) ⭐️⭐️
 4. [Day 4](challenges/04_challenge.py) ⭐️⭐️
-5. [Day 5](challenges/05_challenge.py)
+5. [Day 5](challenges/05_challenge.py) ⭐️⭐️
 6. [Day 6](challenges/06_challenge.py)
 7. [Day 7](challenges/07_challenge.py)
 8. [Day 8](challenges/08_challenge.py)
