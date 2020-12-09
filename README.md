@@ -15,7 +15,7 @@
 6. [Day 6](challenges/06_challenge.py) ⭐️⭐️
 7. [Day 7](challenges/07_challenge.py) ⭐️⭐️
 8. [Day 8](challenges/08_challenge.py) ⭐️⭐️
-9. [Day 9](challenges/09_challenge.py)
+9. [Day 9](challenges/09_challenge.py) ⭐️⭐️
 10. [Day 10](challenges/10_challenge.py)
 11. [Day 11](challenges/11_challenge.py)
 12. [Day 12](challenges/12_challenge.py)
