@@ -17,7 +17,7 @@
 8. [Day 8](challenges/08_challenge.py) ⭐️⭐️
 9. [Day 9](challenges/09_challenge.py) ⭐️⭐️
 10. [Day 10](challenges/10_challenge.py) ⭐️⭐️ (#2 is very difficult 🥵)
-11. [Day 11](challenges/11_challenge.py)
+11. [Day 11](challenges/11_challenge.py) ⭐️⭐️ (#2 is very tedious)
 12. [Day 12](challenges/12_challenge.py)
 13. [Day 13](challenges/13_challenge.py)
 14. [Day 14](challenges/14_challenge.py)
