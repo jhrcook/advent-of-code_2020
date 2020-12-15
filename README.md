@@ -20,7 +20,7 @@
 11. [Day 11](challenges/11_challenge.py) ⭐️⭐️ (#2 is very tedious)
 12. [Day 12](challenges/12_challenge.py) ⭐️⭐️
 13. [Day 13](challenges/13_challenge.py) ⭐️ (couldn't figure out the *Chinese Remainder Theorem*, used brute force 💪🏼 with a dash of clever)
-14. [Day 14](challenges/14_challenge.py) ⭐️
+14. [Day 14](challenges/14_challenge.py) ⭐️⭐️
 15. [Day 15](challenges/15_challenge.py)
 16. [Day 16](challenges/16_challenge.py)
 17. [Day 17](challenges/17_challenge.py)
