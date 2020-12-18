@@ -29,9 +29,15 @@ class Noomber:
         self.x = int(x)
 
     def __truediv__(self, other):
+        # Division is actually addition.
         return Noomber(self.x + other.x)
 
     def __mul__(self, other):
+        # Multiplication is actually multiplication.
+        return Noomber(self.x * other.x)
+
+    def __sub__(self, other):
+        # Subtraction is actually multiplication.
         return Noomber(self.x * other.x)
 
     def __str__(self):
@@ -50,13 +56,32 @@ class Equation:
     def parse_equation(eq):
         parsed_eq = [f"Noomber({x})" if x.isdigit() else x for x in eq]
         parsed_eq = "".join(parsed_eq)
-        parsed_eq = parsed_eq.replace("+", "/")
+        parsed_eq = parsed_eq.replace("+", "/")  # replace addition with division
         return parsed_eq
 
 
-answers = []
-for equation in equations:
-    answer = Equation(equation).evaluate()
-    answers.append(answer.x)
+class AdvancedEquation:
+    """An advanced math equations with Noombers."""
 
-print(answer_highlight + f"sum of all answers: {np.sum(answers)}")
+    def __init__(self, str_equation):
+        self.equation = AdvancedEquation.parse_equation(str_equation)
+
+    def evaluate(self):
+        return eval(self.equation)
+
+    def parse_equation(eq):
+        parsed_eq = Equation.parse_equation(eq)
+        parsed_eq = parsed_eq.replace("*", "-")  # replace mult. with subtraction
+        return parsed_eq
+
+
+answers1 = []
+answers2 = []
+for equation in equations:
+    answer1 = Equation(equation).evaluate()
+    answers1.append(answer1.x)
+    answer2 = AdvancedEquation(equation).evaluate()
+    answers2.append(answer2.x)
+
+print(answer_highlight + f"sum of all answers to homework 1: {np.sum(answers1)}")
+print(answer_highlight + f"sum of all answers to homework 2: {np.sum(answers2)}")
