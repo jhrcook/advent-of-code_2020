@@ -25,7 +25,7 @@
 16. [Day 16](challenges/16_challenge.py) ⭐️⭐️
 17. [Day 17](challenges/17_challenge.py) ⭐️⭐️
 18. [Day 18](challenges/18_challenge.py) ⭐️⭐️
-19. [Day 19](challenges/19_challenge.py)
+19. [Day 19](challenges/19_challenge.py) ⭐️
 20. [Day 20](challenges/20_challenge.py)
 21. [Day 21](challenges/21_challenge.py)
 22. [Day 22](challenges/22_challenge.py)
