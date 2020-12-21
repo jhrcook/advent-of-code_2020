@@ -8,6 +8,7 @@ repos:
         exclude_types: [markdown]
     -   id: end-of-file-fixer
         exclude_types: [markdown]
+        exclude: "data/day_20/"
     -   id: check-yaml
     -   id: check-added-large-files
         args: ["--maxkb=80000"]
