@@ -14,7 +14,7 @@ answer_highlight = colorama.Fore.BLUE + colorama.Style.BRIGHT
 
 
 # Input data.
-DEBUG = False
+DEBUG = True
 if DEBUG:
     input_data_file = Path("data", "day_20", "input_test.txt")
 else:
@@ -88,12 +88,33 @@ for t1, t2 in product(tiles_names, tiles_names):
             break
 
 if DEBUG:
-    print(tile_graph)
+    print("Tile connections:")
+    for tile, connections in tile_graph.items():
+        print(f"{tile} -> {connections}")
+    print("=" * 30)
 
 # Puzzle 1 answer is the product of the tile IDs in the corners.
-answer = 1
+corner_tiles = []
 for tile, connections in tile_graph.items():
     if len(connections) == 2:
-        answer *= tile
+        corner_tiles.append(tile)
 
-print(answer_highlight + f"product of corder tile IDs: {answer}")
+print(answer_highlight + f"product of corner tile IDs: {np.product(corner_tiles)}")
+
+
+image_width = int(np.sqrt(len(tiles_names)) * TILE_WIDTH)
+image = np.zeros((image_width, image_width))
+image[:] = np.nan
+
+tiles_added = []
+previous_tile = corner_tiles[0]
+image[0:TILE_WIDTH, 0:TILE_WIDTH] = tiles[previous_tile].array
+tiles_added.append(previous_tile)
+tile_locs = {previous_tile: (0, 0)}
+
+print(image)
+
+next_tile = tile_graph[previous_tile]
+next_tile = next_tile.difference(tiles_added)
+next_tile = np.random.choice(list(next_tile))
+previous_loc = tile_locs[previous_tile]
