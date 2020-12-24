@@ -1,3 +1,4 @@
+from itertools import product
 from pathlib import Path
 
 import colorama
@@ -65,6 +66,8 @@ directions = {
     "ne": np.array([1, 1]),
 }
 
+#### Puzzle 1 ####
+
 # Flip tiles.
 for instruction in instructions:
     pos = ORIGIN.copy()
@@ -76,4 +79,37 @@ for instruction in instructions:
         tile_grid[pos[0], pos[1]] = 0
 
 
-print(answer_highlight + f"number of black tiles: {int(np.sum(tile_grid))}")
+def total_black_tiles(g):
+    return int(np.sum(g))
+
+
+print(answer_highlight + f"number of black tiles: {total_black_tiles(tile_grid)}")
+
+
+#### Puzzle 2 ####
+
+
+def count_black_neighbors(m, i, j):
+    current_value = m[i, j]
+    sum_neighbors = np.sum([m[i + x[0], j + x[1]] for x in directions.values()])
+    return current_value, sum_neighbors
+
+
+N_DAYS = 100
+
+for day in range(1, N_DAYS + 1):
+    tile_grid_padded = np.pad(tile_grid, pad_width=2)
+    for i, j in product(range(tile_grid.shape[0]), range(tile_grid.shape[1])):
+        current_color, num_blacks = count_black_neighbors(
+            tile_grid_padded, i + 2, j + 2
+        )
+        if current_color == 1 and (num_blacks == 0 or num_blacks > 2):
+            tile_grid[i, j] = 0
+        elif current_color == 0 and num_blacks == 2:
+            tile_grid[i, j] = 1
+    tile_grid = np.pad(tile_grid, pad_width=2)
+    if day % 10 == 0:
+        print(f"day {day}: {total_black_tiles(tile_grid)}")
+
+
+print(answer_highlight + f"number of black tiles: {total_black_tiles(tile_grid)}")
