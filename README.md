@@ -31,7 +31,7 @@
 22. [Day 22](challenges/22_challenge.py) ⭐️⭐️
 23. [Day 23](challenges/23_challenge.py) ⭐️
 24. [Day 24](challenges/24_challenge.py) ⭐️⭐️
-25. [Day 25](challenges/25_challenge.py)
+25. [Day 25](challenges/25_challenge.py) ⭐️
 
 ---
 
