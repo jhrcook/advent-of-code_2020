@@ -101,20 +101,78 @@ for tile, connections in tile_graph.items():
 
 print(answer_highlight + f"product of corner tile IDs: {np.product(corner_tiles)}")
 
+## Puzzle 2 ##
 
-image_width = int(np.sqrt(len(tiles_names)) * TILE_WIDTH)
-image = np.zeros((image_width, image_width))
-image[:] = np.nan
+tile_graph = {tile: list(neighbors) for tile, neighbors in tile_graph.items()}
 
-tiles_added = []
-previous_tile = corner_tiles[0]
-image[0:TILE_WIDTH, 0:TILE_WIDTH] = tiles[previous_tile].array
-tiles_added.append(previous_tile)
-tile_locs = {previous_tile: (0, 0)}
+width = int(np.sqrt(len(tiles_names)))
+tile_grid = np.zeros((width, width))
 
-print(image)
+# 1. place the first corner
+first_corner = corner_tiles[0]
+tile_grid[0, 0] = first_corner
 
-next_tile = tile_graph[previous_tile]
-next_tile = next_tile.difference(tiles_added)
-next_tile = np.random.choice(list(next_tile))
-previous_loc = tile_locs[previous_tile]
+# 2. randomly place neighbors of the corner
+first_neighbors = tile_graph[first_corner]
+tile_grid[0, 1] = first_neighbors[0]
+tile_grid[1, 0] = first_neighbors[1]
+
+# 3. list of edge and inner tiles
+edge_tiles = [tile for tile, values in tile_graph.items() if len(values) in [2, 3]]
+inner_tiles = [x for x in tiles_names if x not in edge_tiles]
+# remove edges already placed
+edge_tiles = [x for x in edge_tiles if x not in tile_grid]
+
+
+def get_neighbors(m, i, j):
+    """Get the neighbors of (i,j) in matrix `m`."""
+    max_i, max_j = m.shape
+    neighbors = []
+    if i - 1 >= 0:
+        neighbors.append(m[i - 1, j])
+    if i + 1 < max_i:
+        neighbors.append(m[i + 1, j])
+    if j - 1 >= 0:
+        neighbors.append(m[i, j - 1])
+    if j + 1 < max_j:
+        neighbors.append(m[i, j + 1])
+    return neighbors
+
+
+def appears_exactly(xs, ary, num):
+    """Do the values in `xs` appear in `ary` exactly `num` times."""
+    count = sum([1 for x in xs if x in ary])
+    return count == num
+
+
+def appears_atleast(xs, ary, num):
+    count = sum([1 for x in xs if x in ary])
+    return count >= num
+
+
+for i, j in product(range(width), range(width)):
+    if tile_grid[i, j] == 0:
+        neighbors = get_neighbors(tile_grid, i, j)
+        neighbors = [x for x in neighbors if x != 0]
+        if i == 0 or j == 0 or i == width - 1 or j == width - 1:
+            next_tile = [
+                t for t, ns in tile_graph.items() if appears_atleast(ns, neighbors, 1)
+            ]
+            print(next_tile)
+            next_tile = [t for t in next_tile if t in edge_tiles]
+            tile_grid[i, j] = next_tile[0]
+            edge_tiles = [x for x in edge_tiles if x != next_tile[0]]
+
+for i, j in product(range(width), range(width)):
+    if tile_grid[i, j] == 0:
+        neighbors = get_neighbors(tile_grid, i, j)
+        neighbors = [x for x in neighbors if x != 0]
+        if len(inner_tiles) > 0:
+            next_tile = [
+                t for t, ns in tile_graph.items() if appears_atleast(ns, neighbors, 2)
+            ]
+            next_tile = [t for t in next_tile if t in inner_tiles]
+            tile_grid[i, j] = next_tile[0]
+            inner_tiles = [x for x in inner_tiles if x != next_tile[0]]
+
+print(tile_grid)
