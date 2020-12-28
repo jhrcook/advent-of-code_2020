@@ -3,10 +3,8 @@ from pathlib import Path
 
 import colorama
 import numpy as np
-from numpy.core.defchararray import array
-from numpy.lib.function_base import rot90
-from numpy.lib.twodim_base import flipud
-from numpy.random import uniform as u
+
+np.random.seed(0)
 
 # Prepare colorama to highlight printed solutions.
 colorama.init(autoreset=True)
@@ -150,6 +148,7 @@ def appears_atleast(xs, ary, num):
     return count >= num
 
 
+# Iterate over edges
 for i, j in product(range(width), range(width)):
     if tile_grid[i, j] == 0:
         neighbors = get_neighbors(tile_grid, i, j)
@@ -158,12 +157,12 @@ for i, j in product(range(width), range(width)):
             next_tile = [
                 t for t, ns in tile_graph.items() if appears_atleast(ns, neighbors, 1)
             ]
-            print(next_tile)
             next_tile = [t for t in next_tile if t in edge_tiles]
             tile_grid[i, j] = next_tile[0]
             edge_tiles = [x for x in edge_tiles if x != next_tile[0]]
 
-for i, j in product(range(width), range(width)):
+# Iterate through insides
+for i, j in product(range(1, width - 1), range(1, width - 1)):
     if tile_grid[i, j] == 0:
         neighbors = get_neighbors(tile_grid, i, j)
         neighbors = [x for x in neighbors if x != 0]
@@ -175,4 +174,108 @@ for i, j in product(range(width), range(width)):
             tile_grid[i, j] = next_tile[0]
             inner_tiles = [x for x in inner_tiles if x != next_tile[0]]
 
-print(tile_grid)
+if DEBUG:
+    print(tile_grid)
+
+
+tile = tiles[1951]
+tile_width = tile.array.shape[0]
+
+transformed_tiles = {}
+
+
+def identity(a):
+    """A function that returns the input array."""
+    return a
+
+
+def random_transform(a):
+    """Randomly transform a tile."""
+    transforms = [np.fliplr, np.flipud, np.rot90, identity]
+    return np.random.choice(transforms)(a)
+
+
+def random_flip(a):
+    """Randomly transform a tile."""
+    transforms = [np.fliplr, np.flipud, identity]
+    return np.random.choice(transforms)(a)
+
+
+def check_tile_row(m, width):
+    """Check that a row of tiles fits."""
+    b = []
+    for k in range(width - 1, m.shape[1] - 1, width):
+        b.append(np.all(m[:, k] == m[:, k + 1]))
+    return np.all(b)
+
+
+sorted_tile_rows = []
+
+for i in range(width):
+    row_tiles = [tiles[t].array for t in tile_grid[i, :]]
+    while True:
+        row_tiles = [random_transform(t) for t in row_tiles]
+        tile_row = np.hstack(row_tiles)
+        if check_tile_row(tile_row, tile_width):
+            sorted_tile_rows.append(tile_row)
+            break
+
+sorted_tile_rows = [a.transpose() for a in sorted_tile_rows]
+while True:
+    sorted_tile_rows = [random_flip(t) for t in sorted_tile_rows]
+    tile_image = np.hstack(sorted_tile_rows)
+    if check_tile_row(tile_image, tile_width):
+        full_image = tile_image
+        break
+
+
+if DEBUG:
+    print(full_image)
+
+# Remove duplicate rows and columns
+idx = np.arange(tile_width - 1, tile_width * (tile_grid.shape[0] - 1), tile_width)
+full_image = np.delete(full_image, idx, axis=0)
+full_image = np.delete(full_image, idx, axis=1)
+
+if DEBUG:
+    string_image = full_image.copy()
+    string_image = string_image.astype("str")
+    string_image[string_image == "0"] = "."
+    string_image[string_image == "1"] = "#"
+
+    string_image_rows = []
+    for i in range(string_image.shape[0]):
+        string_image_rows.append("".join(string_image[i, :]))
+    print("\n".join(string_image_rows))
+
+SEA_MONSTER = [
+    "                  # ",
+    "#    ##    ##    ###",
+    " #  #  #  #  #  #   ",
+]
+SEA_MONSTER = [x.replace(" ", "0") for x in SEA_MONSTER]
+SEA_MONSTER = [x.replace("#", "1") for x in SEA_MONSTER]
+SEA_MONSTER = [list(x) for x in SEA_MONSTER]
+SEA_MONSTER = [np.array(x, dtype=int) for x in SEA_MONSTER]
+SEA_MONSTER = np.array(SEA_MONSTER)
+print(SEA_MONSTER)
+
+INVERSE_SEA_MONSTER = (SEA_MONSTER.copy() - 1) * -1
+print(INVERSE_SEA_MONSTER)
+
+
+def detect_and_remove_sea_monster(m):
+    y = m * SEA_MONSTER
+    if np.sum(y) == np.sum(SEA_MONSTER):
+        return m * INVERSE_SEA_MONSTER
+    else:
+        return m
+
+
+TEST_MONSTER = [
+    [0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1],
+    [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
+    [0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0],
+]
+
+print(detect_and_remove_sea_monster(TEST_MONSTER))
