@@ -12,7 +12,7 @@ answer_highlight = colorama.Fore.BLUE + colorama.Style.BRIGHT
 
 
 # Input data.
-DEBUG = True
+DEBUG = False
 if DEBUG:
     input_data_file = Path("data", "day_20", "input_test.txt")
 else:
@@ -76,6 +76,7 @@ print(f"tile width: {TILE_WIDTH}")
 tile_graph = {tile: set([]) for tile in tiles_names}
 
 # Compare all tiles to build tile graph.
+print("Building tile graph... ", end="")
 for t1, t2 in product(tiles_names, tiles_names):
     if t1 == t2:
         continue
@@ -84,6 +85,7 @@ for t1, t2 in product(tiles_names, tiles_names):
             tile_graph[t1] = tile_graph[t1].union([t2])
             tile_graph[t2] = tile_graph[t2].union([t1])
             break
+print("done")
 
 if DEBUG:
     print("Tile connections:")
@@ -149,6 +151,7 @@ def appears_atleast(xs, ary, num):
 
 
 # Iterate over edges
+print("Iterating over edge tiles to assemble tile grid... ", end="")
 for i, j in product(range(width), range(width)):
     if tile_grid[i, j] == 0:
         neighbors = get_neighbors(tile_grid, i, j)
@@ -160,8 +163,10 @@ for i, j in product(range(width), range(width)):
             next_tile = [t for t in next_tile if t in edge_tiles]
             tile_grid[i, j] = next_tile[0]
             edge_tiles = [x for x in edge_tiles if x != next_tile[0]]
+print("done")
 
 # Iterate through insides
+print("Iterating over inner tiles to assemble tile grid... ", end="")
 for i, j in product(range(1, width - 1), range(1, width - 1)):
     if tile_grid[i, j] == 0:
         neighbors = get_neighbors(tile_grid, i, j)
@@ -173,6 +178,7 @@ for i, j in product(range(1, width - 1), range(1, width - 1)):
             next_tile = [t for t in next_tile if t in inner_tiles]
             tile_grid[i, j] = next_tile[0]
             inner_tiles = [x for x in inner_tiles if x != next_tile[0]]
+print("done")
 
 if DEBUG:
     print(tile_grid)
@@ -196,8 +202,14 @@ def random_transform(a):
 
 
 def random_flip(a):
-    """Randomly transform a tile."""
+    """Randomly flip a tile."""
     transforms = [np.fliplr, np.flipud, identity]
+    return np.random.choice(transforms)(a)
+
+
+def random_flip_lr(a):
+    """Randomly flip a tile (left/right only)."""
+    transforms = [np.fliplr, identity]
     return np.random.choice(transforms)(a)
 
 
@@ -209,35 +221,50 @@ def check_tile_row(m, width):
     return np.all(b)
 
 
+print("Assembling rows of ordered tiles... ", end="")
 sorted_tile_rows = []
-
 for i in range(width):
-    row_tiles = [tiles[t].array for t in tile_grid[i, :]]
+    print(f"{i} ", end="")
+    sorted_tile_row = []
+    for j in range(0, tile_grid.shape[1], 2):
+        row_tiles = [tiles[t].array for t in tile_grid[i, j : j + 2]]
+        while True:
+            row_tiles = [random_transform(t) for t in row_tiles]
+            tile_row = np.hstack(row_tiles)
+            if check_tile_row(tile_row, tile_width):
+                sorted_tile_row.append(tile_row)
+                break
     while True:
-        row_tiles = [random_transform(t) for t in row_tiles]
-        tile_row = np.hstack(row_tiles)
+        sorted_tile_row = [random_flip(t) for t in sorted_tile_row]
+        tile_row = np.hstack(sorted_tile_row)
         if check_tile_row(tile_row, tile_width):
             sorted_tile_rows.append(tile_row)
             break
+print("done")
 
+print("Stacking sorted rows to build full image... ", end="")
 sorted_tile_rows = [a.transpose() for a in sorted_tile_rows]
 while True:
-    sorted_tile_rows = [random_flip(t) for t in sorted_tile_rows]
+    sorted_tile_rows = [random_flip_lr(t) for t in sorted_tile_rows]
     tile_image = np.hstack(sorted_tile_rows)
     if check_tile_row(tile_image, tile_width):
         full_image = tile_image
         break
-
+print("done")
 
 if DEBUG:
     print(full_image)
 
 # Remove duplicate rows and columns
-idx = np.arange(tile_width - 1, tile_width * (tile_grid.shape[0] - 1), tile_width)
+idx = []
+for i in range(tile_grid.shape[0]):
+    idx += [x + (i * tile_width) for x in [0, tile_width - 1]]
 full_image = np.delete(full_image, idx, axis=0)
 full_image = np.delete(full_image, idx, axis=1)
 
 if DEBUG:
+    full_image = np.rot90(full_image)
+    full_image = np.flipud(full_image)
     string_image = full_image.copy()
     string_image = string_image.astype("str")
     string_image[string_image == "0"] = "."
@@ -258,24 +285,55 @@ SEA_MONSTER = [x.replace("#", "1") for x in SEA_MONSTER]
 SEA_MONSTER = [list(x) for x in SEA_MONSTER]
 SEA_MONSTER = [np.array(x, dtype=int) for x in SEA_MONSTER]
 SEA_MONSTER = np.array(SEA_MONSTER)
-print(SEA_MONSTER)
+if DEBUG:
+    print(SEA_MONSTER)
 
 INVERSE_SEA_MONSTER = (SEA_MONSTER.copy() - 1) * -1
-print(INVERSE_SEA_MONSTER)
+if DEBUG:
+    print(INVERSE_SEA_MONSTER)
 
 
-def detect_and_remove_sea_monster(m):
-    y = m * SEA_MONSTER
-    if np.sum(y) == np.sum(SEA_MONSTER):
+def detect_and_remove_sea_monster(m, verbose=True):
+    if np.sum(m * SEA_MONSTER) == np.sum(SEA_MONSTER):
+        if verbose:
+            print("Detected sea monster!")
         return m * INVERSE_SEA_MONSTER
     else:
         return m
 
 
-TEST_MONSTER = [
-    [0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1],
-    [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
-    [0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0],
-]
+if DEBUG:
+    print("(test seamonster):")
+    TEST_MONSTER = [
+        [0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1],
+        [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
+        [0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0],
+    ]
+    print(detect_and_remove_sea_monster(TEST_MONSTER))
 
-print(detect_and_remove_sea_monster(TEST_MONSTER))
+
+starting_sum = np.sum(full_image)
+monster_height, monster_width = SEA_MONSTER.shape
+num_of_checks = 0
+
+print("Searching for monsters... ", end="")
+for _ in range(2):
+    full_image = np.fliplr(full_image)
+    for _ in range(2):
+        full_image = np.flipud(full_image)
+        for _ in range(4):
+            full_image = np.rot90(full_image)
+            for i in range(0, full_image.shape[0] - monster_height):
+                for j in range(0, full_image.shape[1] - monster_width):
+                    m = full_image[i : i + monster_height, j : j + monster_width]
+                    if not np.all(m.shape == SEA_MONSTER.shape):
+                        raise Exception("In correct sub-matrix dimensions.")
+                    full_image[
+                        i : i + monster_height, j : j + monster_width
+                    ] = detect_and_remove_sea_monster(m, verbose=False)
+                    num_of_checks += 1
+print("done")
+print(f"checked {num_of_checks} sub-matrices")
+final_sum = np.sum(full_image)
+print(f"started with {starting_sum} 1's and finished with {final_sum}.")
+print(answer_highlight + f"the habitat's water roughness: {final_sum}")
