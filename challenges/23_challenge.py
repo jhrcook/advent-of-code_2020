@@ -4,7 +4,6 @@ from time import time
 
 import colorama
 import numpy as np
-import pandas as pd
 
 # Prepare colorama to highlight printed solutions.
 colorama.init(autoreset=True)
