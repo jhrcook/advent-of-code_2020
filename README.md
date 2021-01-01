@@ -26,12 +26,14 @@
 17. [Day 17](challenges/17_challenge.py) ⭐️⭐️
 18. [Day 18](challenges/18_challenge.py) ⭐️⭐️
 19. [Day 19](challenges/19_challenge.py) ⭐️⭐️
-20. [Day 20](challenges/20_challenge.py) ⭐️⭐️
+20. [Day 20](challenges/20_challenge.py) ⭐️⭐️ (I had to come back to #2 on this day.)
 21. [Day 21](challenges/21_challenge.py) ⭐️⭐️
 22. [Day 22](challenges/22_challenge.py) ⭐️⭐️
-23. [Day 23](challenges/23_challenge.py) ⭐️
+23. [Day 23](challenges/23_challenge.py) ⭐️⭐️ (With profiling and optimizations, got the runtime from >12 days down to ~1 day.)
 24. [Day 24](challenges/24_challenge.py) ⭐️⭐️
-25. [Day 25](challenges/25_challenge.py) ⭐️
+25. [Day 25](challenges/25_challenge.py) ⭐️⭐️
+
+<img src="featured.png" width="80%">
 
 ---
 
